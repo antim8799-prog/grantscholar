@@ -1,5 +1,6 @@
+import { useAddToast } from './ToastContext';
 import { resolveAvatar } from '../data/avatars';
-import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import {
   AppView,
   Scholarship,
@@ -16,12 +17,6 @@ import {
   INITIAL_DOCUMENTS,
   INITIAL_NOTIFICATIONS
 } from '../data/demoData';
-
-interface Toast {
-  id: number;
-  message: string;
-  type: 'info' | 'success' | 'warning' | 'error';
-}
 
 interface AppContextType {
   currentView: AppView;
@@ -53,7 +48,6 @@ interface AppContextType {
   applyTargetScholarship: Scholarship | null;
   setApplyTargetScholarship: (scholarship: Scholarship | null) => void;
   checkEligibility: (scholarship: Scholarship, profile?: StudentProfile) => EligibilityAuditResult;
-  toasts: Toast[];
   addToast: (message: string, type?: 'info' | 'success' | 'warning' | 'error') => void;
   resetDemoData: () => void;
   isPhotoModalOpen: boolean;
@@ -107,7 +101,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [activeDetailScholarship, setActiveDetailScholarship] = useState<Scholarship | null>(null);
   const [applyTargetScholarship, setApplyTargetScholarship] = useState<Scholarship | null>(null);
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
-  const [toasts, setToasts] = useState<Toast[]>([]);
+  const addToast = useAddToast();
 
   // Local storage synchronization
   useEffect(() => {
@@ -138,45 +132,27 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     localStorage.setItem('grantly_notifications', JSON.stringify(notifications));
   }, [notifications]);
 
-  const addToast = (message: string, type: 'info' | 'success' | 'warning' | 'error' = 'info') => {
-    const id = Date.now() + Math.random();
-    setToasts((prev) => [...prev, { id, message, type }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 4000);
-  };
-
   const setUserProfile = (profile: StudentProfile) => {
     setUserProfileState(profile);
   };
 
-  const toggleSaveScholarship = (id: string) => {
-    setSavedIds((prev) => {
-      if (prev.includes(id)) {
-        addToast('Removed from saved scholarships', 'info');
-        return prev.filter((item) => item !== id);
-      } else {
-        addToast('Saved to your shortlisted scholarships', 'success');
-        return [...prev, id];
-      }
-    });
-  };
+  const toggleSaveScholarship = useCallback((id: string) => {
+    const isSaved = savedIds.includes(id);
+    setSavedIds(previous => isSaved ? previous.filter(item => item !== id) : [...previous, id]);
+    addToast(isSaved ? 'Removed from saved scholarships' : 'Saved to your shortlisted scholarships', isSaved ? 'info' : 'success');
+  }, [savedIds, addToast]);
 
-  const toggleCompare = (scholarship: Scholarship) => {
-    setCompareList((prev) => {
-      const exists = prev.some((s) => s.id === scholarship.id);
-      if (exists) {
-        addToast(`Removed from comparison`, 'info');
-        return prev.filter((s) => s.id !== scholarship.id);
-      }
-      if (prev.length >= 3) {
-        addToast('Comparison limit reached (max 3 simultaneously)', 'warning');
-        return prev;
-      }
+  const toggleCompare = useCallback((scholarship: Scholarship) => {
+    if (compareList.some(item => item.id === scholarship.id)) {
+      setCompareList(previous => previous.filter(item => item.id !== scholarship.id));
+      addToast('Removed from comparison', 'info');
+    } else if (compareList.length >= 3) {
+      addToast('Comparison limit reached (max 3 simultaneously)', 'warning');
+    } else {
+      setCompareList(previous => [...previous, scholarship]);
       addToast(`Added "${scholarship.title.slice(0, 24)}..." to comparison`, 'success');
-      return [...prev, scholarship];
-    });
-  };
+    }
+  }, [compareList, addToast]);
 
   const clearCompare = () => {
     setCompareList([]);
@@ -263,7 +239,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     addToast('Notification feed cleared', 'info');
   };
 
-  const checkEligibility = (
+  const checkEligibility = useCallback((
     scholarship: Scholarship,
     profile: StudentProfile = userProfile
   ): EligibilityAuditResult => {
@@ -349,7 +325,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       score: Math.max(score, 10),
       reasons
     };
-  };
+  }, [userProfile]);
 
   const resetDemoData = () => {
     localStorage.removeItem('grantly_saved_ids');
@@ -399,7 +375,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         applyTargetScholarship,
         setApplyTargetScholarship,
         checkEligibility,
-        toasts,
         addToast,
         resetDemoData,
         isPhotoModalOpen,

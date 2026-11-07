@@ -1,9 +1,9 @@
 import React from 'react';
-import { useApp } from '../context/AppContext';
+import { useToasts } from '../context/ToastContext';
 import { CheckCircle2, AlertCircle, Info, AlertTriangle } from 'lucide-react';
 
 export const ToastContainer: React.FC = () => {
-  const { toasts } = useApp();
+  const toasts = useToasts();
 
   if (toasts.length === 0) return null;
 

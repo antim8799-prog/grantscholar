@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { StudentProfile } from '../types';
 import {
@@ -33,7 +33,7 @@ export const EligibilityChecker: React.FC = () => {
     addToast('Eligibility audit calculated across 12+ scholarship criteria', 'success');
   };
 
-  const auditResults = scholarships
+  const auditResults = useMemo(() => scholarships
     .map((sch) => {
       const audit = checkEligibility(sch, formData);
       return {
@@ -41,7 +41,7 @@ export const EligibilityChecker: React.FC = () => {
         ...audit
       };
     })
-    .sort((a, b) => b.score - a.score);
+    .sort((a, b) => b.score - a.score), [scholarships, checkEligibility, formData]);
 
   const eligibleCount = auditResults.filter((r) => r.verdict === 'Eligible').length;
   const verificationCount = auditResults.filter((r) => r.verdict === 'Needs Verification').length;

@@ -262,6 +262,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => setCurrentView('profile')}
               >
                 <img
+                  width={32} height={32} decoding="async"
                   src={userProfile.avatarUrl}
                   onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = fallbackAvatars[0].url; }}
                   alt={userProfile.fullName}
@@ -300,6 +301,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           ) : (
             <div className="flex flex-col items-center gap-2">
               <img
+                  width={32} height={32} decoding="async"
                 src={userProfile.avatarUrl}
                   onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = fallbackAvatars[0].url; }}
                 alt={userProfile.fullName}

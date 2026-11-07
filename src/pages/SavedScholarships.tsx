@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { ScholarshipCard } from '../components/ScholarshipCard';
 import { Bookmark, ArrowRight } from 'lucide-react';
@@ -6,7 +6,7 @@ import { Bookmark, ArrowRight } from 'lucide-react';
 export const SavedScholarships: React.FC = () => {
   const { scholarships, savedIds, setCurrentView } = useApp();
 
-  const savedList = scholarships.filter((s) => savedIds.includes(s.id));
+  const savedList = useMemo(() => scholarships.filter((s) => savedIds.includes(s.id)), [scholarships, savedIds]);
 
   return (
     <div className="space-y-6">

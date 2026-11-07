@@ -99,6 +99,7 @@ export const PhotoChangeModal: React.FC = () => {
         <div className="flex flex-col items-center justify-center p-5 bg-slate-50 rounded-2xl border border-slate-200/80 mb-5">
           <div className="relative group">
             <img
+                  width={96} height={96} decoding="async"
               src={previewUrl}
               onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = fallbackAvatars[0].url; }}
               alt="Profile preview"
@@ -162,6 +163,8 @@ export const PhotoChangeModal: React.FC = () => {
                     }`}
                   >
                     <img
+                  width={56} height={56} decoding="async"
+                      loading="lazy"
                       src={preset.url}
                       alt={preset.name}
                       referrerPolicy="no-referrer"

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 import { Scholarship } from '../types';
 import { useApp } from '../context/AppContext';
 import { Bookmark, Columns2, ArrowRight } from 'lucide-react';
@@ -7,7 +7,7 @@ interface ScholarshipCardProps {
   scholarship: Scholarship;
 }
 
-export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({ scholarship }) => {
+export const ScholarshipCard = memo(function ScholarshipCard({ scholarship }: ScholarshipCardProps) {
   const {
     savedIds,
     toggleSaveScholarship,
@@ -20,7 +20,7 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({ scholarship })
 
   const isSaved = savedIds.includes(scholarship.id);
   const isCompared = compareList.some((s) => s.id === scholarship.id);
-  const audit = checkEligibility(scholarship);
+  const audit = useMemo(() => checkEligibility(scholarship), [checkEligibility, scholarship]);
 
   // Verdict text color
   const verdictColor =
@@ -30,7 +30,7 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({ scholarship })
       ? 'text-amber-700'
       : 'text-rose-700';
 
-  return (
+  return useMemo(() => (
     <div className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between group">
       <div>
         {/* Top unboxed metadata line & interactive actions */}
@@ -155,5 +155,6 @@ export const ScholarshipCard: React.FC<ScholarshipCardProps> = ({ scholarship })
         </div>
       </div>
     </div>
-  );
-};
+  ), [scholarship, isSaved, isCompared, audit, verdictColor, toggleCompare,
+    toggleSaveScholarship, setActiveDetailScholarship, setApplyTargetScholarship]);
+});

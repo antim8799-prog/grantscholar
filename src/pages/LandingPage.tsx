@@ -107,6 +107,7 @@ export const LandingPage: React.FC = () => {
             <div className="lg:col-span-5 relative">
               <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-xl bg-slate-100 aspect-[4/3] group">
                 <img
+                  width={800} height={600} fetchPriority="high" decoding="async"
                   src={heroStudents}
                   alt="Students collaborating on scholarship research"
                   referrerPolicy="no-referrer"
