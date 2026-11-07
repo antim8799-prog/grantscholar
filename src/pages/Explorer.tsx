@@ -52,13 +52,14 @@ export const Explorer: React.FC = () => {
   ];
 
   const filteredScholarships = useMemo(() => {
+    const query = searchQuery.toLowerCase();
     return scholarships
       .filter((sch) => {
         const matchesQuery =
-          sch.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          sch.provider.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          sch.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          sch.field.toLowerCase().includes(searchQuery.toLowerCase());
+          sch.title.toLowerCase().includes(query) ||
+          sch.provider.toLowerCase().includes(query) ||
+          sch.description.toLowerCase().includes(query) ||
+          sch.field.toLowerCase().includes(query);
 
         const matchesCat =
           selectedCategory === 'All' || sch.category === selectedCategory;

@@ -52,6 +52,7 @@ export const Profile: React.FC = () => {
               title="Click to change profile photo"
             >
               <img
+                  width={80} height={80} decoding="async"
                 src={formData.avatarUrl}
                 onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = fallbackAvatars[0].url; }}
                 alt={formData.fullName}
