@@ -1,0 +1,6 @@
+{
+  "name": "GRANTLY – Unified Scholarship Discovery & Management Platform",
+  "description": "A centralized, intelligent EdTech SaaS platform for students to discover, verify eligibility, compare, and manage educational scholarships.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
